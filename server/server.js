@@ -13,6 +13,8 @@ var { Todo } = require('./models/todo');
 
 app.use(bodyParser.json());
 
+/* Todos */
+
 app.post('/todos', (req, res) => {
     var todo = new Todo({
         text: req.body.text,
@@ -51,7 +53,7 @@ app.get('/todos/:id', (req, res) => {
             }
             res.send({todo});
          }).catch((err) => {
-            res.status(404).res.send();
+            res.status(404).send();
         });
 });
 
@@ -93,8 +95,10 @@ app.delete('/todos/:id/delete', (req, res) => {
                 res.status(404).send();
             }
             res.send({todo});
-        }).catch(e => res.status(400).send({}));  
+        }).catch(e => res.status(400).send());  
 });
+
+/* Users */
 
 app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
@@ -116,11 +120,20 @@ app.post('/users/login', (req, res) => {
 
     User.findByCredentials(body.email, body.password)
         .then((user) => {
-            user.generateAuthToken().then((token) => {
-                res.header('x-auth', token).send({user});
-            })
+            user.generateAuthToken()
+                .then((token) => {
+                    res.header('x-auth', token).send({user});
+                })
         }).catch((e) => res.status(400).send()); 
 });
+
+app.delete('/users/me/token', authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send();
+    }, () => {
+            res.status(400).send();
+        })
+    });
 
 app.get('/users/me', authenticate, (req, res) => {    
     res.send(req.user);
