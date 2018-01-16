@@ -117,7 +117,7 @@ describe('TODOS', () => {
     describe('DELETE /todos/:id/delete', () => {
         
         it('should delete one todo by id', (done) => {
-            let hexId = todos[2]._id.toHexString(); //user2
+            let hexId = todos[2]._id.toHexString();
             request(app)
                 .delete(`/todos/${hexId}/delete`)
                 .set('x-auth', users[1].tokens[0].token)
@@ -183,16 +183,29 @@ describe('TODOS', () => {
 
             request(app)
                 .patch(`/todos/${hexId}/edit`)
+                .set('x-auth', users[0].tokens[0].token)
                 .send({
                     completed: true,
                     text
                 })
                 .expect(200)
                 .expect((res) => {
+
                     expect(res.body.todo.text).toBe(text);
                     expect(res.body.todo.completed).toBe(true);
                     expect(res.body.todo.completedAt).toBeA('number');
                 })
+                .end(done);
+        });
+
+        it('should not update todo belonging to different user', (done) => {
+            let hexId = todos[0]._id.toHexString();
+            let text = 'test it good';
+
+            request(app)
+                .patch(`/todos/${hexId}/edit`)
+                .set('x-auth', users[1].tokens[0].token)
+                .expect(404)
                 .end(done);
         });
 
@@ -202,6 +215,7 @@ describe('TODOS', () => {
 
             request(app)
                 .patch(`/todos/${hexId}/edit`)
+                .set('x-auth', users[0].tokens[0].token)
                 .send({
                     text: text,
                     completed: false

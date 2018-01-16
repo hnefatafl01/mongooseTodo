@@ -59,7 +59,7 @@ app.get('/todos/:id', authenticate, async (req, res) => {
     }
 });
 
-app.patch('/todos/:id/edit', async (req, res) => {
+app.patch('/todos/:id/edit', authenticate, async (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['text', 'completed']);
     if (!ObjectID.isValid(id)) {
@@ -74,7 +74,11 @@ app.patch('/todos/:id/edit', async (req, res) => {
     }
 
     try {
-        const todo = await Todo.findByIdAndUpdate(id, { $set: body }, { new: true });
+        const todo = await Todo.findOneAndUpdate(
+            { _id: id, _creator: req.user.id },
+            { $set: body },
+            { new: true }
+        );
         if (!todo) {
             res.status(404).send();
         }
