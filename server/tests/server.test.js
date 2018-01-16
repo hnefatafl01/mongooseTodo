@@ -132,7 +132,7 @@ describe('TODOS', () => {
 
                     Todo.findById(hexId)
                         .then((todo) => {
-                            expect(todo).toNotExist();
+                            expect(todo).toBeFalsy();
                             done();
                         }).catch(e => done(e));
                 });
@@ -152,7 +152,7 @@ describe('TODOS', () => {
                     Todo
                         .findById({ _id: hexId })
                         .then((todo) => {
-                            expect(todo).toExist();
+                            expect(todo).toBeTruthy();
                             done();
                         }).catch(e => done(e));
                 });
@@ -193,7 +193,7 @@ describe('TODOS', () => {
 
                     expect(res.body.todo.text).toBe(text);
                     expect(res.body.todo.completed).toBe(true);
-                    expect(res.body.todo.completedAt).toBeA('number');
+                    expect(typeof res.body.todo.completedAt).toBe('number');
                 })
                 .end(done);
         });
@@ -224,7 +224,7 @@ describe('TODOS', () => {
                 .expect((res) => {
                     expect(res.body.todo.text).toBe(text);
                     expect(res.body.todo.completed).toBe(false);
-                    expect(res.body.todo.completedAt).toNotExist();
+                    expect(res.body.todo.completedAt).toBeFalsy();
                 })
                 .end(done);
         });
@@ -269,8 +269,8 @@ describe('USERS', () => {
                 .send({ email, password })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.headers['x-auth']).toExist();
-                    expect(res.body.user._id).toExist();
+                    expect(res.headers['x-auth']).toBeTruthy();
+                    expect(res.body.user._id).toBeTruthy();
                     expect(res.body.user.email).toBe(email);
                 })
                 .end((err,res) => {
@@ -280,8 +280,8 @@ describe('USERS', () => {
 
                     User.findOne({ email })
                         .then((user) => {
-                            expect(user).toExist();
-                            expect(user.password).toNotBe(password);
+                            expect(user).toBeTruthy();
+                            expect(user.password).not.toBe(password);
                             done();
                         }).catch((e) => done(e));
                 });
@@ -321,7 +321,7 @@ describe('USERS', () => {
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.headers['x-auth']).toExist();
+                    expect(res.headers['x-auth']).toBeTruthy();
                 })
                 .end((err, result) => {
                     User.findById(users[1]._id)
@@ -330,7 +330,7 @@ describe('USERS', () => {
                                 return done(err);
                             }
 
-                            expect(user.tokens[1]).toInclude({
+                            expect(user.toObject().tokens[1]).toMatchObject({
                                 access: 'auth',
                                 token: result.headers['x-auth']
                             });
@@ -348,7 +348,7 @@ describe('USERS', () => {
                 })
                 .expect(400)
                 .expect((res) => {
-                    expect(res.headers['x-auth']).toNotExist();
+                    expect(res.headers['x-auth']).toBeFalsy();
                 })
                 .end((err, result) => {
                     User.findById(users[1]._id)
