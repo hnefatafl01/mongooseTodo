@@ -110,10 +110,10 @@ app.delete('/todos/:id/delete', authenticate, async (req, res) => {
 
 /* Users */
 app.post('/users', async (req, res) => {
-    var body = _.pick(req.body, ['email', 'password']);
-    var user = new User(body);
     try {
-        user = await user.save();
+        var body = _.pick(req.body, ['email', 'password']);
+        var user = new User(body);
+        await user.save();
         const token = user.generateAuthToken();
         res.header('x-auth', token).send({ user });
     } catch(e) {
