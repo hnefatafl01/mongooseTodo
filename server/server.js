@@ -130,21 +130,16 @@ app.post('/users', async (req, res) => {
     }
 });
 
-app.post('/users/login', (req, res) => {
+app.post('/users/login', async (req, res) => {
     let body = _.pick(req.body, ['email','password']);
 
-    // try {
-    //   const user = await User.findByCredentials(body.email, body.password);
-    //   const token = await user.generateAuthToken()
-    //   res.header('x-auth', token).send({ user });   
-    // } catch(e) {
-    //     res.status(400).send();
-    // }
-    User.findByCredentials(body.email, body.password).then((res) => {
-        user.generateAuthToken().then((user) => {
-            res.header('x-auth', token).send({ user });
-        })
-    }).catch(e => res.status(400).send());
+    try {
+      const user = await User.findByCredentials(body.email, body.password);
+      const token = await user.generateAuthToken()
+      res.header('x-auth', token).send({ user });   
+    } catch(e) {
+        res.status(400).send();
+    }
 
 });
 
