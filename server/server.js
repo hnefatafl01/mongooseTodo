@@ -13,13 +13,14 @@ var { User } = require('./models/user');
 var { Todo } = require('./models/todo');
 
 var corsOptions = {
-    origin: 'https://node-mongoose-todo.herokuapp.com/',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+    origin: '*',
+    optionsSuccessStatus: 200,
+    exposedHeaders: ['x-auth', 'Content-Type']
 }
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 /* Todos */
 
