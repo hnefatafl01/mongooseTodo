@@ -21,8 +21,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 /* Todos */
-// authenticate,
-app.post('/todos',  async (req, res) => {
+
+app.post('/todos', authenticate, async (req, res) => {
     var todo = new Todo({
         text: req.body.text,
         completed: req.body.completed,
@@ -37,8 +37,8 @@ app.post('/todos',  async (req, res) => {
     }
         
 });
-// authenticate,
-app.get('/todos', async (req, res) => {
+
+app.get('/todos', authenticate, async (req, res) => {
     try {
         let todos = await Todo.find({ _creator:req.user._id })
         res.send({ todos });
@@ -47,8 +47,8 @@ app.get('/todos', async (req, res) => {
     }
 });
 
-// authenticate,
-app.get('/todos/:id',  async (req, res) => {
+
+app.get('/todos/:id', authenticate, async (req, res) => {
     let id = req.params.id;
     if (!ObjectID.isValid(id)) {
         res.status(404).send();
@@ -66,8 +66,8 @@ app.get('/todos/:id',  async (req, res) => {
         res.status(400).send();
     }
 });
-// authenticate,
-app.patch('/todos/:id/edit',  async (req, res) => {
+
+app.patch('/todos/:id/edit', authenticate, async (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['text', 'completed']);
     if (!ObjectID.isValid(id)) {
