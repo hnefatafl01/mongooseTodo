@@ -5,13 +5,20 @@ const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const port = process.env.PORT || 3000;
+const cors = require('cors');
 
 var { authenticate } = require('./middleware/authenticate');
 var { mongoose } = require('./db/mongoose');
 var { User } = require('./models/user');
 var { Todo } = require('./models/todo');
 
+var corsOptions = {
+    origin: 'https://node-mongoose-todo.herokuapp.com/',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+}
+
 app.use(bodyParser.json());
+app.use(cors());
 
 /* Todos */
 // authenticate,
